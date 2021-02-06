@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Graph;
 
@@ -26,16 +27,32 @@ namespace MeetMuch.Web.Calendar
         {
             // Configure a calendar view for the current week
             var endOfWeekUtc = startOfWeekUtc.AddDays(7);
-            return await GetEvents(userTimeZone, startOfWeekUtc, endOfWeekUtc);
+            return await GetEvents(userTimeZone, startOfWeekUtc, endOfWeekUtc, e => new
+            {
+                e.Subject,
+                e.Organizer,
+                e.Start,
+                e.End
+            });
         }
 
         public async Task<IEnumerable<CalendarEvent>> GetUserCalendar(string userTimeZone, DateTime start, DateTime end)
         {
-            var graphEvents = await GetEvents(userTimeZone, start.ToUniversalTime(), end.ToUniversalTime());
-            return graphEvents == null ? Enumerable.Empty<CalendarEvent>() : graphEvents.Select(e => new CalendarEvent(e));
+            var graphEvents = await GetEvents(userTimeZone, start.ToUniversalTime(), end.ToUniversalTime(), e => new
+            {
+                e.Start,
+                e.End
+            });
+            return graphEvents == null
+                ? Enumerable.Empty<CalendarEvent>()
+                : graphEvents.Select(e => new CalendarEvent
+                {
+                    Start = DateTime.Parse(e.Start.DateTime),
+                    End = DateTime.Parse(e.End.DateTime)
+                });
         }
 
-        private async Task<IList<Event>> GetEvents(string userTimeZone, DateTime start, DateTime end)
+        private async Task<IList<Event>> GetEvents(string userTimeZone, DateTime start, DateTime end, Expression<Func<Event, object>> selectExpression)
         {
             var viewOptions = new List<QueryOption>
             {
@@ -51,13 +68,7 @@ namespace MeetMuch.Web.Calendar
                 // Get max 50 per request
                 .Top(50)
                 // Only return fields app will use
-                .Select(e => new
-                {
-                    e.Subject,
-                    e.Organizer,
-                    e.Start,
-                    e.End
-                })
+                .Select(selectExpression)
                 // Order results chronologically
                 .OrderBy("start/dateTime")
                 .GetAsync();

@@ -33,25 +33,25 @@ namespace MeetMuch.Web.Controllers
 
                 var events = await _calendarAccess.GetUserCalendar(User.GetUserGraphTimeZone(), start, end);
 
-                var meetingList = new ConcurrentDictionary<DateTime, TimeSpan>();
-                foreach (var calendarEvent in events)
-                {
-                    meetingList.AddOrUpdate(
-                        calendarEvent.Start.Date,
-                        calendarEvent.End - calendarEvent.Start,
-                        (time, span) => span + (calendarEvent.End - calendarEvent.Start));
-                }
+                // var meetingList = new ConcurrentDictionary<DateTime, Tuple<int, TimeSpan>>();
+                // foreach (var calendarEvent in events)
+                // {
+                //     meetingList.AddOrUpdate(
+                //         calendarEvent.Start.Date,
+                //         new Tuple<int, TimeSpan>(1, calendarEvent.End - calendarEvent.Start),
+                //         (time, old) => new Tuple<int, TimeSpan>(old.Item1 + 1, old.Item2 + (calendarEvent.End - calendarEvent.Start)));
+                // }
 
-                var result = meetingList.Select(m => new TrendData
+                var result = events.Select(m => new TrendData
                 {
-                    Date = m.Key.ToString("yyyy-MM-dd"),
-                    Minutes = Convert.ToInt32(m.Value.TotalMinutes)
+                    Start = m.Start,
+                    End = m.End
                 });
 
                 // Return a JSON dump of events
                 return new ContentResult
                 {
-                    Content = JsonSerializer.Serialize(result.OrderBy(r => r.Date)),
+                    Content = JsonSerializer.Serialize(result.OrderBy(r => r.Start)),
                     ContentType = "application/json"
                 };
             }
@@ -69,11 +69,14 @@ namespace MeetMuch.Web.Controllers
                 };
             }
         }
-        
+
         private class TrendData
         {
-            public string Date { get; set; }
-            public int Minutes { get; set; }
+            // public string Date { get; set; }
+            // public int Minutes { get; set; }
+            // public int Meetings { get; set; }
+            public DateTime Start { get; set; }
+            public DateTime End { get; set; }
         }
     }
 }
