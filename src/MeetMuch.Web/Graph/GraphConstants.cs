@@ -3,7 +3,7 @@ namespace MeetMuch.Web.Graph
     public static class GraphConstants
     {
         // Defines the permission scopes used by the app
-        public readonly static string[] Scopes =
+        public static readonly string[] Scopes =
         {
             "User.Read",
             "MailboxSettings.Read",

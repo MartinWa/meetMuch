@@ -1,12 +1,11 @@
-﻿@using MeetMuch.Web.Graph
-@{
+﻿@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="jumbotron">
     <h1>Meet Much?</h1>
     <p class="lead">Do you feel that you have to many meetings? Lets find out!</p>
-    @if (User.Identity.IsAuthenticated)
+    @if (User?.Identity?.IsAuthenticated ?? false)
     {
         <p>Use the navigation bar at the top of the page to get started.</p>
     }

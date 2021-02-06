@@ -5,8 +5,9 @@ using Microsoft.Graph;
 
 namespace MeetMuch.Web.Graph
 {
-    public static class GraphClaimTypes {
-        public const string DisplayName ="graph_name";
+    public static class GraphClaimTypes
+    {
+        public const string DisplayName = "graph_name";
         public const string Email = "graph_email";
         public const string Photo = "graph_photo";
         public const string TimeZone = "graph_timezone";
@@ -44,29 +45,28 @@ namespace MeetMuch.Web.Graph
 
         public static void AddUserGraphInfo(this ClaimsPrincipal claimsPrincipal, User user)
         {
-            var identity = claimsPrincipal.Identity as ClaimsIdentity;
+            if (!(claimsPrincipal.Identity is ClaimsIdentity identity))
+            {
+                return;
+            }
 
-            identity.AddClaim(
-                new Claim(GraphClaimTypes.DisplayName, user.DisplayName));
-            identity.AddClaim(
-                new Claim(GraphClaimTypes.Email,
-                    user.Mail ?? user.UserPrincipalName));
-            identity.AddClaim(
-                new Claim(GraphClaimTypes.TimeZone,
-                    user.MailboxSettings.TimeZone));
-            identity.AddClaim(
-                new Claim(GraphClaimTypes.TimeFormat, user.MailboxSettings.TimeFormat));
+            identity.AddClaim(new Claim(GraphClaimTypes.DisplayName, user.DisplayName));
+            identity.AddClaim(new Claim(GraphClaimTypes.Email, user.Mail ?? user.UserPrincipalName));
+            identity.AddClaim(new Claim(GraphClaimTypes.TimeZone, user.MailboxSettings.TimeZone));
+            identity.AddClaim(new Claim(GraphClaimTypes.TimeFormat, user.MailboxSettings.TimeFormat));
         }
 
         public static void AddUserGraphPhoto(this ClaimsPrincipal claimsPrincipal, Stream photoStream)
         {
-            var identity = claimsPrincipal.Identity as ClaimsIdentity;
+            if (!(claimsPrincipal.Identity is ClaimsIdentity identity))
+            {
+                return;
+            }
 
             if (photoStream == null)
             {
                 // Add the default profile photo
-                identity.AddClaim(
-                    new Claim(GraphClaimTypes.Photo, "/img/no-profile-photo.png"));
+                identity.AddClaim(new Claim(GraphClaimTypes.Photo, "/img/no-profile-photo.png"));
                 return;
             }
 
@@ -79,8 +79,7 @@ namespace MeetMuch.Web.Graph
             // Generate a date URI for the photo
             var photoUrl = $"data:image/png;base64,{Convert.ToBase64String(photoBytes)}";
 
-            identity.AddClaim(
-                new Claim(GraphClaimTypes.Photo, photoUrl));
+            identity.AddClaim(new Claim(GraphClaimTypes.Photo, photoUrl));
         }
     }
 }
