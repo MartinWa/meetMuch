@@ -13,6 +13,7 @@ using Microsoft.Graph;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using MeetMuch.Web.Calendar;
 using MeetMuch.Web.Graph;
 
 namespace MeetMuch.Web
@@ -126,6 +127,7 @@ namespace MeetMuch.Web
                 })
                 // Add the Microsoft Identity UI pages for signin/out
                 .AddMicrosoftIdentityUI();
+            services.AddScoped<ICalendarAccess, CalendarAccess>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
