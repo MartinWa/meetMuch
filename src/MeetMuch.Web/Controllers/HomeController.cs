@@ -1,11 +1,11 @@
-﻿using MeetMuch.Web.Models;
+﻿using System.Diagnostics;
+using MeetMuch.Web.Alerts;
+using MeetMuch.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Web;
-using System.Diagnostics;
 
-namespace GraphTutorial.Controllers
+namespace MeetMuch.Web.Controllers
 {
     public class HomeController : Controller
     {

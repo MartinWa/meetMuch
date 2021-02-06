@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace GraphTutorial
+namespace MeetMuch.Web.Alerts
 {
     public static class AlertExtensions
     {

@@ -1,15 +1,13 @@
-﻿@{
+﻿@using MeetMuch.Web.Graph
+@{
     ViewData["Title"] = "Home Page";
 }
 
-@using GraphTutorial
-
 <div class="jumbotron">
-    <h1>ASP.NET Core Graph Tutorial</h1>
-    <p class="lead">This sample app shows how to use the Microsoft Graph API to access a user's data from ASP.NET Core</p>
+    <h1>Meet Much?</h1>
+    <p class="lead">Do you feel that you have to many meetings? Lets find out!</p>
     @if (User.Identity.IsAuthenticated)
     {
-        <h4>Welcome @User.GetUserGraphDisplayName()!</h4>
         <p>Use the navigation bar at the top of the page to get started.</p>
     }
     else

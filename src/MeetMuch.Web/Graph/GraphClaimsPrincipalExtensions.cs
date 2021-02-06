@@ -1,9 +1,9 @@
-using Microsoft.Graph;
 using System;
 using System.IO;
 using System.Security.Claims;
+using Microsoft.Graph;
 
-namespace GraphTutorial
+namespace MeetMuch.Web.Graph
 {
     public static class GraphClaimTypes {
         public const string DisplayName ="graph_name";

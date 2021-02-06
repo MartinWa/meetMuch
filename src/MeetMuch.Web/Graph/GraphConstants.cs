@@ -1,4 +1,4 @@
-namespace GraphTutorial
+namespace MeetMuch.Web.Graph
 {
     public static class GraphConstants
     {

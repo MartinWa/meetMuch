@@ -12,8 +12,8 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.Graph;
 using System.Net;
 using System.Net.Http.Headers;
-using GraphTutorial;
 using System.Threading.Tasks;
+using MeetMuch.Web.Graph;
 
 namespace MeetMuch.Web
 {
@@ -134,7 +134,8 @@ namespace MeetMuch.Web
             services.AddControllersWithViews(options =>
             {
                 var policy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
+                .RequireAssertion(_ => true)
+              //      .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             })
