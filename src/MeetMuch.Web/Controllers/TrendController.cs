@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using MeetMuch.Web.Calendar;
@@ -25,15 +28,30 @@ namespace MeetMuch.Web.Controllers
         {
             try
             {
-                var userTimeZone = TZConvert.GetTimeZoneInfo(User.GetUserGraphTimeZone());
-                var startOfWeek = _calendarAccess.GetUtcStartOfWeekInTimeZone(DateTime.Today, userTimeZone);
+                var start = DateTime.Today.AddDays(-14);
+                var end = DateTime.Today;
 
-                var events = await _calendarAccess.GetUserWeekCalendar(startOfWeek, User.GetUserGraphTimeZone());
+                var events = await _calendarAccess.GetUserCalendar(User.GetUserGraphTimeZone(), start, end);
+
+                var meetingList = new ConcurrentDictionary<DateTime, TimeSpan>();
+                foreach (var calendarEvent in events)
+                {
+                    meetingList.AddOrUpdate(
+                        calendarEvent.Start.Date,
+                        calendarEvent.End - calendarEvent.Start,
+                        (time, span) => span + (calendarEvent.End - calendarEvent.Start));
+                }
+
+                var result = meetingList.Select(m => new TrendData
+                {
+                    Date = m.Key.ToString("yyyy-MM-dd"),
+                    Minutes = Convert.ToInt32(m.Value.TotalMinutes)
+                });
 
                 // Return a JSON dump of events
                 return new ContentResult
                 {
-                    Content = JsonSerializer.Serialize(events),
+                    Content = JsonSerializer.Serialize(result.OrderBy(r => r.Date)),
                     ContentType = "application/json"
                 };
             }
@@ -50,6 +68,12 @@ namespace MeetMuch.Web.Controllers
                     ContentType = "text/plain"
                 };
             }
+        }
+        
+        private class TrendData
+        {
+            public string Date { get; set; }
+            public int Minutes { get; set; }
         }
     }
 }

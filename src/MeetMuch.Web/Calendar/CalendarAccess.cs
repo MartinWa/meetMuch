@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Graph;
 
@@ -7,7 +8,8 @@ namespace MeetMuch.Web.Calendar
 {
     public interface ICalendarAccess
     {
-        Task<IList<Event>> GetUserWeekCalendar(DateTime startOfWeekUtc, string userTimeZone);
+        Task<IList<Event>> GetUserWeekCalendar(string userTimeZone, DateTime startOfWeekUtc);
+        Task<IEnumerable<CalendarEvent>> GetUserCalendar(string userTimeZone, DateTime start, DateTime end);
         DateTime GetUtcStartOfWeekInTimeZone(DateTime today, TimeZoneInfo timeZone);
     }
 
@@ -20,15 +22,25 @@ namespace MeetMuch.Web.Calendar
             _graphClient = graphClient;
         }
 
-        public async Task<IList<Event>> GetUserWeekCalendar(DateTime startOfWeekUtc, string userTimeZone)
+        public async Task<IList<Event>> GetUserWeekCalendar(string userTimeZone, DateTime startOfWeekUtc)
         {
             // Configure a calendar view for the current week
             var endOfWeekUtc = startOfWeekUtc.AddDays(7);
+            return await GetEvents(userTimeZone, startOfWeekUtc, endOfWeekUtc);
+        }
 
+        public async Task<IEnumerable<CalendarEvent>> GetUserCalendar(string userTimeZone, DateTime start, DateTime end)
+        {
+            var graphEvents = await GetEvents(userTimeZone, start.ToUniversalTime(), end.ToUniversalTime());
+            return graphEvents == null ? Enumerable.Empty<CalendarEvent>() : graphEvents.Select(e => new CalendarEvent(e));
+        }
+
+        private async Task<IList<Event>> GetEvents(string userTimeZone, DateTime start, DateTime end)
+        {
             var viewOptions = new List<QueryOption>
             {
-                new("startDateTime", startOfWeekUtc.ToString("o")),
-                new("endDateTime", endOfWeekUtc.ToString("o"))
+                new("startDateTime", start.ToString("o")),
+                new("endDateTime", end.ToString("o"))
             };
 
             var events = await _graphClient.Me.CalendarView

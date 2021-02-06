@@ -28,7 +28,7 @@ namespace MeetMuch.Web.Controllers
             {
                 var userTimeZone = TZConvert.GetTimeZoneInfo(User.GetUserGraphTimeZone());
                 var startOfWeekUtc = _calendarAccess.GetUtcStartOfWeekInTimeZone(DateTime.Today, userTimeZone);
-                var events = await _calendarAccess.GetUserWeekCalendar(startOfWeekUtc, User.GetUserGraphTimeZone());
+                var events = await _calendarAccess.GetUserWeekCalendar(User.GetUserGraphTimeZone(), startOfWeekUtc);
 
                 // Convert UTC start of week to user's time zone for
                 // proper display
