@@ -30,6 +30,9 @@
                         <li class="@(controller == "Calendar" ? "nav-item active" : "nav-item")">
                             <a class="nav-link" asp-area="" asp-controller="Calendar" asp-action="Index">Calendar</a>
                         </li>
+                        <li class="@(controller == "Trend" ? "nav-item active" : "nav-item")">
+                            <a class="nav-link" asp-area="" asp-controller="Trend" asp-action="Index">Trend</a>
+                        </li>
                         }
                     </ul>
                     <partial name="_LoginPartial"/>
