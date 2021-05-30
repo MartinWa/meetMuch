@@ -41,14 +41,22 @@ namespace MeetMuch.Web.Calendar
             var graphEvents = await GetEvents(userTimeZone, start.ToUniversalTime(), end.ToUniversalTime(), e => new
             {
                 e.Start,
-                e.End
+                e.End,
+                e.Organizer,
+                e.Subject,
+                e.IsAllDay,
+                e.ResponseStatus
             });
             return graphEvents == null
                 ? Enumerable.Empty<CalendarEvent>()
                 : graphEvents.Select(e => new CalendarEvent
                 {
                     Start = DateTime.Parse(e.Start.DateTime),
-                    End = DateTime.Parse(e.End.DateTime)
+                    End = DateTime.Parse(e.End.DateTime),
+                    Subject = e.Subject,
+                    Organizer = e.Organizer.EmailAddress.Name,
+                    IsAllDay = e.IsAllDay,
+                    Response = e.ResponseStatus.Response
                 });
         }
 
